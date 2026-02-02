@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Link Afiliado</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+
+</head>
+<body>
+
+<div class="container">
+    <h1>🔗 Gerador de Link Afiliado</h1>
+
+    <div class="form">
+        <input type="text" id="productName" placeholder="Nome do produto">
+        <input type="url" id="productLink" placeholder="Link afiliado do produto">
+        <input type="url" id="productImage" placeholder="Link da imagem do produto">
+        <input type="text" id="productPrice" placeholder="Preço (ex: 99,90)">
+        <button onclick="addProduct()">Adicionar Produto</button>
+    </div>
+
+    <div id="productList" class="products"></div>
+</div>
+
+<script src="script.js"></script>
+
+<a id="mobileBuyButton" class="mobile-buy" href="#" target="_blank">
+    🛒 Comprar agora
+</a>
+
+
+</body>
+</html>
