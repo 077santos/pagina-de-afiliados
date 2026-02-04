@@ -1,79 +1,24 @@
-function addProduct() {
-    const nameInput = document.getElementById("productName");
-    const linkInput = document.getElementById("productLink");
-    const imageInput = document.getElementById("productImage");
-    const priceInput = document.getElementById("productPrice");
+const API_URL = "https://script.google.com/macros/s/AKfycbxKsFtm7-0IXS-VMCpa2ov-eDAqn7cjm2wuizPnObSoHF7AAOsroYA43PjUe_OrlfnJSg/exec";
 
-    const name = nameInput.value.trim();
-    const link = linkInput.value.trim();
-    const image = imageInput.value.trim();
-    const price = priceInput.value.trim();
-
-    if (!name || !link || !image || !price) {
-        alert("Preencha todos os campos");
-        return;
-    }
+// 🔽 CARREGAR PRODUTOS DA PLANILHA
+async function loadProducts() {
+    const response = await fetch(API_URL);
+    const products = await response.json();
 
     const productList = document.getElementById("productList");
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-        <button class="remove-btn" onclick="removeProduct(this)">✖</button>
-        <img src="${image}" alt="${name}">
-        <h2>${name}</h2>
-        <p class="price">R$ ${price}</p>
-        <a href="${link}"
-           target="_blank"
-           rel="noopener noreferrer"
-           onclick="setMobileBuy('${name}', '${price}', '${link}')">
-           Ver no App
-        </a>
-    `;
-
-    productList.appendChild(card);
-    saveProducts();
-
-    nameInput.value = "";
-    linkInput.value = "";
-    imageInput.value = "";
-    priceInput.value = "";
-}
-
-function saveProducts() {
-    const cards = document.querySelectorAll(".card");
-    const products = [];
-
-    cards.forEach(card => {
-        products.push({
-            name: card.querySelector("h2").innerText,
-            price: card.querySelector(".price").innerText.replace("R$ ", ""),
-            link: card.querySelector("a").href,
-            image: card.querySelector("img").src
-        });
-    });
-
-    localStorage.setItem("products", JSON.stringify(products));
-}
-
-function loadProducts() {
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-    const productList = document.getElementById("productList");
+    productList.innerHTML = "";
 
     products.forEach(product => {
         const card = document.createElement("div");
         card.className = "card";
 
         card.innerHTML = `
-            <button class="remove-btn" onclick="removeProduct(this)">✖</button>
-            <img src="${product.image}" alt="${product.name}">
+            <img src="${product.image}">
             <h2>${product.name}</h2>
             <p class="price">R$ ${product.price}</p>
             <a href="${product.link}"
                target="_blank"
-               rel="noopener noreferrer"
-               onclick="setMobileBuy('${product.name}', '${product.price}', '${product.link}')">
+               onclick="setMobileBuy('${product.name}','${product.price}','${product.link}')">
                Ver no App
             </a>
         `;
@@ -82,12 +27,32 @@ function loadProducts() {
     });
 }
 
-function removeProduct(button) {
-    const card = button.parentElement;
-    card.remove();
-    saveProducts();
+// 🔼 ADICIONAR PRODUTO NA PLANILHA
+async function addProduct() {
+    const name = productName.value.trim();
+    const link = productLink.value.trim();
+    const image = productImage.value.trim();
+    const price = productPrice.value.trim();
+
+    if (!name || !link || !image || !price) {
+        alert("Preencha todos os campos");
+        return;
+    }
+
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ name, link, image, price })
+    });
+
+    productName.value = "";
+    productLink.value = "";
+    productImage.value = "";
+    productPrice.value = "";
+
+    loadProducts();
 }
 
+// 🔘 BOTÃO MOBILE
 function setMobileBuy(name, price, link) {
     const btn = document.getElementById("mobileBuyButton");
     btn.href = link;
@@ -95,10 +60,7 @@ function setMobileBuy(name, price, link) {
     btn.classList.add("active");
 }
 
+// 🚀 INICIALIZA
 document.addEventListener("DOMContentLoaded", loadProducts);
 
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker registrado"))
-        .catch(err => console.log("Erro no SW:", err));
-}
+
